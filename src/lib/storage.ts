@@ -51,12 +51,15 @@ class InMemoryStorage {
   private aggregatedData: Map<string, CircularBuffer<AggregatedPoint>> = new Map();
   private latestValues: Map<string, number> = new Map();
   private currentBuckets: Map<string, { sum: number; count: number; min: number; max: number; startTs: number }> = new Map();
+  private instanceId: string;
 
   private readonly RAW_RETENTION_HOURS = 1; // Keep 1 hour of raw data
   private readonly RAW_SAMPLE_INTERVAL_MS = 5000; // 5 seconds
   private readonly MAX_RAW_POINTS = (this.RAW_RETENTION_HOURS * 60 * 60 * 1000) / this.RAW_SAMPLE_INTERVAL_MS;
 
   constructor() {
+    this.instanceId = Math.random().toString(36).substr(2, 9);
+    
     // Initialize storage for all metrics
     const metrics = ['voltage', 'frequency_Hz', 'energy_kWh', 'temp.CH1', 'temp.CH3', 'temp.CH5', 'vibration'];
     metrics.forEach(metric => {
@@ -123,17 +126,36 @@ class InMemoryStorage {
     this.currentBuckets.set(metric, bucket);
   }
 
-  async getDataPoints(metric: string, fromTs: number, toTs: number, aggregation: 'raw' | '1min' | '5min' = 'raw'): Promise<DataPoint[]> {
+  async getDataPoints(metric: string, fromTs?: number, toTs?: number, aggregation: 'raw' | '1min' | '5min' = 'raw'): Promise<DataPoint[]> {
     if (aggregation === 'raw') {
       const rawBuffer = this.rawData.get(metric);
-      if (!rawBuffer) return [];
+      if (!rawBuffer) {
+        return [];
+      }
       
-      return rawBuffer.getAll().filter(point => point.ts >= fromTs && point.ts <= toTs);
+      const allPoints = rawBuffer.getAll();
+      
+      // If no time range specified, return all data
+      if (fromTs === undefined || toTs === undefined) {
+        return allPoints;
+      }
+      
+      return allPoints.filter(point => point.ts >= fromTs && point.ts <= toTs);
     } else {
       const aggBuffer = this.aggregatedData.get(metric);
       if (!aggBuffer) return [];
       
-      const aggregatedPoints = aggBuffer.getAll().filter(point => 
+      const allAggregatedPoints = aggBuffer.getAll();
+      
+      // If no time range specified, return all data
+      if (fromTs === undefined || toTs === undefined) {
+        return allAggregatedPoints.map(point => ({
+          ts: point.bucketStartTs,
+          value: point.avg
+        }));
+      }
+      
+      const aggregatedPoints = allAggregatedPoints.filter(point => 
         point.bucketStartTs >= fromTs && point.bucketStartTs <= toTs
       );
       
@@ -161,14 +183,16 @@ class InMemoryStorage {
   }
 }
 
-// Singleton instance
-let storage: InMemoryStorage | null = null;
+// Singleton instance - use global to persist across hot reloads in development
+declare global {
+  var __iot_storage: InMemoryStorage | undefined;
+}
 
 export function getStorage(): InMemoryStorage {
-  if (!storage) {
-    storage = new InMemoryStorage();
+  if (!global.__iot_storage) {
+    global.__iot_storage = new InMemoryStorage();
   }
-  return storage;
+  return global.__iot_storage;
 }
 
 // Vercel KV integration (for production)

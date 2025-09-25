@@ -30,7 +30,16 @@ export async function POST(request: NextRequest) {
     // Parse timestamp (support both ISO string and YYYY-MM-DD HH:mm:ss format)
     let timestamp: number;
     try {
-      timestamp = Date.parse(body.timestamp);
+      // Handle YYYY-MM-DD HH:mm:ss format by treating it as IST time
+      if (body.timestamp.match(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/)) {
+        // Parse as IST time (UTC+5:30)
+        const istDate = new Date(body.timestamp + '+05:30');
+        timestamp = istDate.getTime();
+      } else {
+        // Parse as ISO string
+        timestamp = Date.parse(body.timestamp);
+      }
+      
       if (isNaN(timestamp)) {
         return NextResponse.json({ error: 'Invalid timestamp format' }, { status: 400 });
       }

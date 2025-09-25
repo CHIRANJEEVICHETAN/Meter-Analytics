@@ -32,10 +32,10 @@ export default function VoltageChart({ data, chartType, timeRange }: VoltageChar
     },
     tooltip: {
       trigger: 'axis',
-      backgroundColor: 'rgba(255, 255, 255, 0.95)',
-      borderColor: 'rgba(0, 0, 0, 0.1)',
+      backgroundColor: 'rgba(0, 0, 0, 0.8)',
+      borderColor: 'rgba(255, 255, 255, 0.2)',
       textStyle: {
-        color: '#374151',
+        color: '#fff',
       },
       formatter: (params: unknown) => {
         const point = (params as Array<{data: [number, number], color: string}>)[0];
@@ -52,18 +52,18 @@ export default function VoltageChart({ data, chartType, timeRange }: VoltageChar
       type: 'time',
       axisLine: {
         lineStyle: {
-          color: 'rgba(0, 0, 0, 0.1)',
+          color: '#e5e7eb',
         },
       },
       axisLabel: {
-        color: '#6b7280',
+        color: '#374151',
         formatter: (value: number) => {
           return new Date(value).toLocaleTimeString();
         },
       },
       splitLine: {
         lineStyle: {
-          color: 'rgba(0, 0, 0, 0.05)',
+          color: '#f3f4f6',
         },
       },
     },
@@ -71,21 +71,21 @@ export default function VoltageChart({ data, chartType, timeRange }: VoltageChar
       type: 'value',
       name: 'Voltage (V)',
       nameTextStyle: {
-        color: '#6b7280',
+        color: '#374151',
       },
       min: 0,
       max: 500,
       axisLine: {
         lineStyle: {
-          color: 'rgba(0, 0, 0, 0.1)',
+          color: '#e5e7eb',
         },
       },
       axisLabel: {
-        color: '#6b7280',
+        color: '#374151',
       },
       splitLine: {
         lineStyle: {
-          color: 'rgba(0, 0, 0, 0.05)',
+          color: '#f3f4f6',
         },
       },
     },

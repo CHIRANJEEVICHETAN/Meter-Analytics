@@ -6,7 +6,9 @@ const baseUrl = 'http://localhost:3008';
 // Generate sample data with realistic IoT sensor values
 function generateSampleData() {
   const now = new Date();
-  const timestamp = now.toISOString();
+  // Convert to IST timezone (UTC+5:30)
+  const istTime = new Date(now.getTime() + (5.5 * 60 * 60 * 1000));
+  const timestamp = istTime.toISOString();
   
   return {
     temperature: {

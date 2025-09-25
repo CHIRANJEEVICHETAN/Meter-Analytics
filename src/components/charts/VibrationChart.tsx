@@ -52,18 +52,18 @@ export default function VibrationChart({ data, chartType, timeRange }: Vibration
       type: 'time',
       axisLine: {
         lineStyle: {
-          color: 'rgba(255, 255, 255, 0.3)',
+          color: '#e5e7eb',
         },
       },
       axisLabel: {
-        color: 'rgba(255, 255, 255, 0.7)',
+        color: '#374151',
         formatter: (value: number) => {
           return new Date(value).toLocaleTimeString();
         },
       },
       splitLine: {
         lineStyle: {
-          color: 'rgba(255, 255, 255, 0.1)',
+          color: '#f3f4f6',
         },
       },
     },
@@ -71,21 +71,21 @@ export default function VibrationChart({ data, chartType, timeRange }: Vibration
       type: 'value',
       name: 'Vibration (V)',
       nameTextStyle: {
-        color: 'rgba(255, 255, 255, 0.7)',
+        color: '#374151',
       },
       min: 0,
       max: 100,
       axisLine: {
         lineStyle: {
-          color: 'rgba(255, 255, 255, 0.3)',
+          color: '#e5e7eb',
         },
       },
       axisLabel: {
-        color: 'rgba(255, 255, 255, 0.7)',
+        color: '#374151',
       },
       splitLine: {
         lineStyle: {
-          color: 'rgba(255, 255, 255, 0.1)',
+          color: '#f3f4f6',
         },
       },
     },

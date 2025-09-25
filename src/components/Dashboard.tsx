@@ -2,9 +2,7 @@
 
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import Sidebar from './Sidebar';
 import LiveMetricsBar from './LiveMetricsBar';
-import TimeFilter from './TimeFilter';
 import ChartCard from './ChartCard';
 import VoltageChart from './charts/VoltageChart';
 import CurrentChart from './charts/CurrentChart';
@@ -17,9 +15,6 @@ interface DashboardProps {
 }
 
 export default function Dashboard({ initialData }: DashboardProps) {
-  const [selectedRange, setSelectedRange] = useState('1h');
-  const [customFrom, setCustomFrom] = useState('');
-  const [customTo, setCustomTo] = useState('');
   const [chartTypes, setChartTypes] = useState({
     voltage: 'line' as 'line' | 'area' | 'bar',
     current: 'line' as 'line' | 'area' | 'bar',
@@ -27,64 +22,21 @@ export default function Dashboard({ initialData }: DashboardProps) {
     vibration: 'line' as 'line' | 'area' | 'bar',
   });
 
-  // Calculate time range
-  const getTimeRange = (range: string) => {
-    const now = new Date();
-    const to = now.toISOString();
-    
-    switch (range) {
-      case '1m':
-        return {
-          from: new Date(now.getTime() - 60 * 1000).toISOString(),
-          to
-        };
-      case '5m':
-        return {
-          from: new Date(now.getTime() - 5 * 60 * 1000).toISOString(),
-          to
-        };
-      case '30m':
-        return {
-          from: new Date(now.getTime() - 30 * 60 * 1000).toISOString(),
-          to
-        };
-      case '1h':
-        return {
-          from: new Date(now.getTime() - 60 * 60 * 1000).toISOString(),
-          to
-        };
-      case '6h':
-        return {
-          from: new Date(now.getTime() - 6 * 60 * 60 * 1000).toISOString(),
-          to
-        };
-      case '24h':
-        return {
-          from: new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString(),
-          to
-        };
-      case 'custom':
-        return { from: customFrom, to: customTo };
-      default:
-        return { from: new Date(now.getTime() - 60 * 60 * 1000).toISOString(), to };
-    }
-  };
-
-  const timeRange = getTimeRange(selectedRange);
-
-  // Fetch metrics data with polling
+  // Fetch all available data without time filtering
   const { data: metricsData, isLoading, error } = useQuery({
-    queryKey: ['metrics', timeRange.from, timeRange.to],
+    queryKey: ['metrics', 'all'],
     queryFn: () => fetchMetrics(
-      timeRange.from,
-      timeRange.to,
-      'voltage,current,temp.CH1,temp.CH3,temp.CH5,vibration',
+      undefined, // No from time
+      undefined, // No to time
+      'voltage,current,temp.CH1,temp.CH3,temp.CH5,vibration,frequency_Hz,energy_kWh',
       'raw'
     ),
     refetchInterval: 5000, // Poll every 5 seconds
     refetchIntervalInBackground: true,
-    staleTime: 0, // Always consider data stale to force refetch
+    staleTime: 4000, // Consider data fresh for 4 seconds to reduce unnecessary refetches
+    refetchOnWindowFocus: false, // Prevent refetch on window focus
   });
+
 
   const handleChartTypeChange = (chartName: keyof typeof chartTypes, type: 'line' | 'area' | 'bar') => {
     setChartTypes(prev => ({
@@ -93,10 +45,6 @@ export default function Dashboard({ initialData }: DashboardProps) {
     }));
   };
 
-  const handleCustomRangeChange = (from: string, to: string) => {
-    setCustomFrom(from);
-    setCustomTo(to);
-  };
 
   const exportCSV = (metricName: string, data: Array<{ ts: number; value: number }>) => {
     const csvContent = [
@@ -129,12 +77,9 @@ export default function Dashboard({ initialData }: DashboardProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar */}
-      <Sidebar />
-      
+    <div className="min-h-screen bg-gray-50">
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex flex-col">
         {/* Header */}
         <div className="bg-white border-b border-gray-200 px-8 py-6">
           <div className="flex items-center justify-between">
@@ -163,24 +108,13 @@ export default function Dashboard({ initialData }: DashboardProps) {
 
         {/* Content Area */}
         <div className="flex-1 p-8">
-          {/* Time Filter */}
-          <div className="mb-8">
-            <TimeFilter
-              selectedRange={selectedRange}
-              onRangeChange={setSelectedRange}
-              customFrom={customFrom}
-              customTo={customTo}
-              onCustomRangeChange={handleCustomRangeChange}
-            />
-          </div>
-
           {/* Live Metrics */}
           <div className="mb-8">
             <LiveMetricsBar latest={metricsData?.latest || initialData.latest} />
           </div>
 
           {/* Charts Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           {/* Voltage Chart */}
           <ChartCard
             title="Voltage"
@@ -191,7 +125,7 @@ export default function Dashboard({ initialData }: DashboardProps) {
             <VoltageChart
               data={metricsData?.samples.voltage || []}
               chartType={chartTypes.voltage}
-              timeRange={timeRange}
+              timeRange={{ from: '', to: '' }}
             />
           </ChartCard>
 
@@ -205,13 +139,13 @@ export default function Dashboard({ initialData }: DashboardProps) {
             <CurrentChart
               data={metricsData?.samples.current || []}
               chartType={chartTypes.current}
-              timeRange={timeRange}
+              timeRange={{ from: '', to: '' }}
             />
           </ChartCard>
         </div>
 
           {/* Second Row Charts */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           {/* Temperature Chart */}
           <ChartCard
             title="Temperature"
@@ -233,7 +167,7 @@ export default function Dashboard({ initialData }: DashboardProps) {
                 'temp.CH5': metricsData?.samples['temp.CH5'] || [],
               }}
               chartType={chartTypes.temperature}
-              timeRange={timeRange}
+              timeRange={{ from: '', to: '' }}
             />
           </ChartCard>
 
@@ -247,7 +181,7 @@ export default function Dashboard({ initialData }: DashboardProps) {
             <VibrationChart
               data={metricsData?.samples.vibration || []}
               chartType={chartTypes.vibration}
-              timeRange={timeRange}
+              timeRange={{ from: '', to: '' }}
             />
           </ChartCard>
         </div>

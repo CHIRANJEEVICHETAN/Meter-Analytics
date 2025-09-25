@@ -1,15 +1,12 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
-  --background: #0f172a;
-  --foreground: #f8fafc;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --font-geist-sans: ui-sans-serif, system-ui, sans-serif;
+  --font-geist-mono: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
 }
 
 * {
@@ -25,10 +22,11 @@ body {
 }
 
 body {
-  background: #f8fafc;
-  color: #1e293b;
-  font-family: var(--font-sans), system-ui, sans-serif;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans);
   min-height: 100vh;
+  line-height: 1.6;
 }
 
 /* Custom scrollbar */
@@ -50,7 +48,24 @@ body {
   background: #94a3b8;
 }
 
-/* Animation utilities */
+/* Chart container styles */
+.chart-container {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid #e2e8f0;
+  min-height: 320px;
+}
+
+/* Utility classes */
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.animate-slide-in {
+  animation: slideIn 0.6s ease-out;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -71,20 +86,4 @@ body {
     opacity: 1;
     transform: translateX(0);
   }
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.6s ease-out;
-}
-
-.animate-slide-in {
-  animation: slideIn 0.6s ease-out;
-}
-
-/* Chart container styles */
-.chart-container {
-  background: #ffffff;
-  border-radius: 8px;
-  padding: 16px;
-  border: 1px solid #e2e8f0;
 }

@@ -34,6 +34,14 @@ export default function LiveMetricsBar({ latest }: LiveMetricsBarProps) {
       bgColor: 'bg-yellow-500/20',
     },
     {
+      label: 'Current',
+      value: latest.current.toFixed(1),
+      unit: 'A',
+      icon: Zap,
+      color: 'text-indigo-400',
+      bgColor: 'bg-indigo-500/20',
+    },
+    {
       label: 'Energy',
       value: latest.energy_kWh.toFixed(2),
       unit: 'kWh',
@@ -76,7 +84,7 @@ export default function LiveMetricsBar({ latest }: LiveMetricsBarProps) {
   ];
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
+    <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
       {metrics.map((metric, index) => {
         const IconComponent = metric.icon;
         return (
