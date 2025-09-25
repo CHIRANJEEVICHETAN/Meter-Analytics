@@ -38,7 +38,7 @@ export default function VibrationChart({ data, chartType, timeRange }: Vibration
         color: '#fff',
       },
       formatter: (params: unknown) => {
-        const point = (params as any[])[0];
+        const point = (params as Array<{data: [number, number], color: string}>)[0];
         const timestamp = new Date(point.data[0]).toLocaleString();
         return `
           <div style="padding: 8px;">

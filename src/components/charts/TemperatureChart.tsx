@@ -51,11 +51,11 @@ export default function TemperatureChart({ data, chartType, timeRange }: Tempera
         color: '#fff',
       },
       formatter: (params: unknown) => {
-        const paramsArray = params as any[];
+        const paramsArray = params as Array<{data: [number, number], color: string, seriesName: string}>;
         const timestamp = new Date(paramsArray[0].data[0]).toLocaleString();
         let content = `<div style="padding: 8px;"><div style="font-weight: bold; margin-bottom: 4px;">${timestamp}</div>`;
         
-        paramsArray.forEach((param: any) => {
+        paramsArray.forEach((param) => {
           content += `<div style="color: ${param.color};">● ${param.seriesName}: ${param.data[1].toFixed(1)}°C</div>`;
         });
         
