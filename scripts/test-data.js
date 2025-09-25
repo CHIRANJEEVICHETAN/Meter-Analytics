@@ -1,7 +1,7 @@
 // Test script to populate sample data for the IoT Analytics Dashboard
 // Run with: node scripts/test-data.js
 
-const baseUrl = `http://localhost:3008`;
+const baseUrl = `https://meter-analytics.vercel.app`;
 
 // Generate sample data with realistic IoT sensor values
 function generateSampleData() {

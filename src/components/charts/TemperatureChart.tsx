@@ -27,7 +27,7 @@ export default function TemperatureChart({ data, chartType }: TemperatureChartPr
     grid: {
       left: '3%',
       right: '4%',
-      bottom: '3%',
+      bottom: '15%',
       top: '15%',
       containLabel: true,
     },
@@ -60,6 +60,7 @@ export default function TemperatureChart({ data, chartType }: TemperatureChartPr
       },
       axisLabel: {
         color: '#374151',
+        rotate: -45,
         formatter: (value: number) => {
           return formatISTTime(value);
         },

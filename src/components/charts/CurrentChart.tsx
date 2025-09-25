@@ -16,7 +16,7 @@ export default function CurrentChart({ data, chartType }: CurrentChartProps) {
     grid: {
       left: '3%',
       right: '4%',
-      bottom: '3%',
+      bottom: '15%',
       containLabel: true,
     },
     tooltip: {
@@ -46,6 +46,7 @@ export default function CurrentChart({ data, chartType }: CurrentChartProps) {
       },
       axisLabel: {
         color: '#374151',
+        rotate: -45,
         formatter: (value: number) => {
           return formatISTTime(value);
         },
