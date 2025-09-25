@@ -11,8 +11,9 @@ import FrequencyChart from './charts/FrequencyChart';
 import TemperatureChart from './charts/TemperatureChart';
 import VibrationChart from './charts/VibrationChart';
 import LoginwareLogo from './LoginwareLogo';
+import TimeFilter from './TimeFilter';
 import { fetchMetrics, MetricsData, resetData } from '@/lib/api';
-import { getCurrentISTTime } from '@/lib/timezone';
+import { getCurrentISTTime, getISTTimeRange, convertISTToUTC } from '@/lib/timezone';
 
 interface DashboardProps {
   initialData: MetricsData;
@@ -28,12 +29,29 @@ export default function Dashboard({ initialData }: DashboardProps) {
     vibration: 'line' as 'line' | 'area' | 'bar',
   });
 
-  // Fetch all available data without time filtering
+  // Time filter state
+  const [selectedTimeRange, setSelectedTimeRange] = useState('1h');
+  const [customFrom, setCustomFrom] = useState('');
+  const [customTo, setCustomTo] = useState('');
+
+  // Calculate time range for API calls
+  const timeRange = useMemo(() => {
+    if (selectedTimeRange === 'custom' && customFrom && customTo) {
+      return {
+        from: convertISTToUTC(customFrom),
+        to: convertISTToUTC(customTo)
+      };
+    } else {
+      return getISTTimeRange(selectedTimeRange);
+    }
+  }, [selectedTimeRange, customFrom, customTo]);
+
+  // Fetch data with time filtering
   const { data: metricsData, isLoading, error } = useQuery({
-    queryKey: ['metrics', 'all'],
+    queryKey: ['metrics', timeRange.from, timeRange.to],
     queryFn: () => fetchMetrics(
-      undefined, // No from time
-      undefined, // No to time
+      timeRange.from,
+      timeRange.to,
       'voltage,current,temp.CH1,temp.CH2,temp.CH3,vibration,frequency_Hz,energy_kWh',
       'raw'
     ),
@@ -150,10 +168,24 @@ export default function Dashboard({ initialData }: DashboardProps) {
 
         {/* Content Area */}
         <div className="flex-1 p-8">
-           {/* Live Metrics */}
-           <div className="mb-8">
-             <LiveMetricsBar latest={chartData.latest} />
-           </div>
+          {/* Time Filter */}
+          <div className="mb-6">
+            <TimeFilter
+              selectedRange={selectedTimeRange}
+              onRangeChange={setSelectedTimeRange}
+              customFrom={customFrom}
+              customTo={customTo}
+              onCustomRangeChange={(from, to) => {
+                setCustomFrom(from);
+                setCustomTo(to);
+              }}
+            />
+          </div>
+
+          {/* Live Metrics */}
+          <div className="mb-8">
+            <LiveMetricsBar latest={chartData.latest} />
+          </div>
 
           {/* First Row: Voltage and Current */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">

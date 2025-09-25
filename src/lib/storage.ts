@@ -175,6 +175,14 @@ class InMemoryStorage {
     return latest;
   }
 
+  async getAverageValue(metric: string, fromTs: number, toTs: number): Promise<number> {
+    const dataPoints = await this.getDataPoints(metric, fromTs, toTs, 'raw');
+    if (dataPoints.length === 0) return 0;
+    
+    const sum = dataPoints.reduce((acc, point) => acc + point.value, 0);
+    return sum / dataPoints.length;
+  }
+
   async clear(): Promise<void> {
     this.rawData.forEach(buffer => buffer.clear());
     this.aggregatedData.forEach(buffer => buffer.clear());

@@ -72,3 +72,15 @@ export async function resetData(): Promise<Response> {
     },
   });
 }
+
+export async function fetchPercentages(): Promise<Record<string, number>> {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
+  const response = await fetch(`${baseUrl}/api/percentages`);
+  
+  if (!response.ok) {
+    throw new Error(`Failed to fetch percentages: ${response.statusText}`);
+  }
+  
+  const data = await response.json();
+  return data.percentages;
+}

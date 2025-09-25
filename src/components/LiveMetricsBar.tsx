@@ -1,6 +1,8 @@
 'use client';
 
 import { Activity, Zap, Thermometer, Gauge, Battery } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { fetchPercentages } from '@/lib/api';
 
 interface LiveMetricsBarProps {
   latest: {
@@ -16,9 +18,19 @@ interface LiveMetricsBarProps {
 }
 
 export default function LiveMetricsBar({ latest }: LiveMetricsBarProps) {
+  // Fetch percentage changes
+  const { data: percentages = {} } = useQuery({
+    queryKey: ['percentages'],
+    queryFn: fetchPercentages,
+    refetchInterval: 30000, // Update every 30 seconds
+    refetchIntervalInBackground: true,
+    staleTime: 25000,
+  });
+
   const metrics = [
     {
       label: 'Frequency',
+      key: 'frequency_Hz',
       value: latest.frequency_Hz.toFixed(2),
       unit: 'Hz',
       icon: Activity,
@@ -27,6 +39,7 @@ export default function LiveMetricsBar({ latest }: LiveMetricsBarProps) {
     },
     {
       label: 'Voltage',
+      key: 'voltage',
       value: latest.voltage.toFixed(1),
       unit: 'V',
       icon: Zap,
@@ -35,6 +48,7 @@ export default function LiveMetricsBar({ latest }: LiveMetricsBarProps) {
     },
     {
       label: 'Current',
+      key: 'current',
       value: latest.current.toFixed(1),
       unit: 'A',
       icon: Zap,
@@ -43,6 +57,7 @@ export default function LiveMetricsBar({ latest }: LiveMetricsBarProps) {
     },
     {
       label: 'Energy',
+      key: 'energy_kWh',
       value: latest.energy_kWh.toFixed(2),
       unit: 'kWh',
       icon: Battery,
@@ -51,6 +66,7 @@ export default function LiveMetricsBar({ latest }: LiveMetricsBarProps) {
     },
     {
       label: 'CH1 Temp',
+      key: 'temp.CH1',
       value: latest['temp.CH1'].toFixed(1),
       unit: '°C',
       icon: Thermometer,
@@ -59,6 +75,7 @@ export default function LiveMetricsBar({ latest }: LiveMetricsBarProps) {
     },
     {
       label: 'CH2 Temp',
+      key: 'temp.CH2',
       value: latest['temp.CH2'].toFixed(1),
       unit: '°C',
       icon: Thermometer,
@@ -67,6 +84,7 @@ export default function LiveMetricsBar({ latest }: LiveMetricsBarProps) {
     },
     {
       label: 'CH3 Temp',
+      key: 'temp.CH3',
       value: latest['temp.CH3'].toFixed(1),
       unit: '°C',
       icon: Thermometer,
@@ -75,6 +93,7 @@ export default function LiveMetricsBar({ latest }: LiveMetricsBarProps) {
     },
     {
       label: 'Vibration',
+      key: 'vibration',
       value: latest.vibration.toFixed(3),
       unit: 'V',
       icon: Gauge,
@@ -107,9 +126,22 @@ export default function LiveMetricsBar({ latest }: LiveMetricsBarProps) {
               <span className="text-sm text-gray-500 ml-1">{metric.unit}</span>
             </div>
             {/* Trend indicator */}
-            <div className="mt-2 flex items-center text-xs text-green-600">
-              <span className="font-medium">+2.5%</span>
-              <span className="ml-1">vs last hour</span>
+            <div className="mt-2 flex items-center text-xs">
+              {(() => {
+                const percentage = percentages[metric.key] || 0;
+                const isPositive = percentage >= 0;
+                const colorClass = isPositive ? 'text-green-600' : 'text-red-600';
+                const sign = isPositive ? '+' : '';
+                
+                return (
+                  <>
+                    <span className={`font-medium ${colorClass}`}>
+                      {sign}{percentage.toFixed(1)}%
+                    </span>
+                    <span className="ml-1 text-gray-500">vs last hour</span>
+                  </>
+                );
+              })()}
             </div>
           </div>
         );
