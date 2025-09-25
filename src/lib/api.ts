@@ -9,16 +9,18 @@ export interface MetricsData {
     voltage: Array<{ ts: number; value: number }>;
     current: Array<{ ts: number; value: number }>;
     'temp.CH1': Array<{ ts: number; value: number }>;
+    'temp.CH2': Array<{ ts: number; value: number }>;
     'temp.CH3': Array<{ ts: number; value: number }>;
-    'temp.CH5': Array<{ ts: number; value: number }>;
     vibration: Array<{ ts: number; value: number }>;
+    frequency_Hz: Array<{ ts: number; value: number }>;
+    energy_kWh: Array<{ ts: number; value: number }>;
   };
   latest: {
     voltage: number;
     current: number;
     'temp.CH1': number;
+    'temp.CH2': number;
     'temp.CH3': number;
-    'temp.CH5': number;
     vibration: number;
     frequency_Hz: number;
     energy_kWh: number;
@@ -58,5 +60,15 @@ export async function ingestData(payload: unknown): Promise<Response> {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify(payload),
+  });
+}
+
+export async function resetData(): Promise<Response> {
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
+  return fetch(`${baseUrl}/api/reset`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
   });
 }

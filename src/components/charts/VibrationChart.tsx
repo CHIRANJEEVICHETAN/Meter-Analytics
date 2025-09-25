@@ -3,6 +3,7 @@
 import React, { useMemo } from 'react';
 import BaseChart from './BaseChart';
 import { EChartsOption } from 'echarts';
+import { formatISTDateTime, formatISTTime } from '@/lib/timezone';
 
 interface VibrationChartProps {
   data: Array<{ ts: number; value: number }>;
@@ -27,7 +28,7 @@ export default function VibrationChart({ data, chartType }: VibrationChartProps)
       },
       formatter: (params: unknown) => {
         const point = (params as Array<{data: [number, number], color: string}>)[0];
-        const timestamp = new Date(point.data[0]).toLocaleString();
+        const timestamp = formatISTDateTime(point.data[0]);
         return `
           <div style="padding: 8px;">
             <div style="font-weight: bold; margin-bottom: 4px;">${timestamp}</div>
@@ -46,7 +47,7 @@ export default function VibrationChart({ data, chartType }: VibrationChartProps)
       axisLabel: {
         color: '#374151',
         formatter: (value: number) => {
-          return new Date(value).toLocaleTimeString();
+          return formatISTTime(value);
         },
       },
       splitLine: {

@@ -12,7 +12,7 @@ export default async function Home() {
     initialData = await fetchMetrics(
       from,
       to,
-      'voltage,current,temp.CH1,temp.CH3,temp.CH5,vibration',
+      'voltage,current,temp.CH1,temp.CH2,temp.CH3,vibration,frequency_Hz,energy_kWh',
       'raw'
     );
   } catch (error) {
@@ -24,16 +24,18 @@ export default async function Home() {
         voltage: [],
         current: [],
         'temp.CH1': [],
+        'temp.CH2': [],
         'temp.CH3': [],
-        'temp.CH5': [],
-        vibration: []
+        vibration: [],
+        frequency_Hz: [],
+        energy_kWh: []
       },
       latest: {
         voltage: 0,
         current: 0,
         'temp.CH1': 0,
+        'temp.CH2': 0,
         'temp.CH3': 0,
-        'temp.CH5': 0,
         vibration: 0,
         frequency_Hz: 0,
         energy_kWh: 0

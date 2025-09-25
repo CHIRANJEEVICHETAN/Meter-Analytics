@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
     // Parse query parameters
     const fromParam = searchParams.get('from');
     const toParam = searchParams.get('to');
-    const metricsParam = searchParams.get('metrics') || 'voltage,current,temp.CH1,temp.CH3,temp.CH5,vibration';
+    const metricsParam = searchParams.get('metrics') || 'voltage,current,temp.CH1,temp.CH2,temp.CH3,vibration';
     const aggParam = searchParams.get('agg') || 'raw';
 
 
@@ -40,10 +40,10 @@ export async function GET(request: NextRequest) {
     // Map frontend metric names to storage keys
     const metricMapping: Record<string, string> = {
       'voltage': 'voltage',
-      'current': 'voltage', // Calculate current from voltage (assuming 230V nominal, 0-100A range)
+      'current': 'current_A', // Use real current data from current_A
       'temp.CH1': 'temp.CH1',
-      'temp.CH3': 'temp.CH3', 
-      'temp.CH5': 'temp.CH5',
+      'temp.CH2': 'temp.CH2', 
+      'temp.CH3': 'temp.CH3',
       'vibration': 'vibration',
       'frequency_Hz': 'frequency_Hz',
       'energy_kWh': 'energy_kWh'
@@ -57,17 +57,7 @@ export async function GET(request: NextRequest) {
       const storageKey = metricMapping[metric];
       if (storageKey) {
         const dataPoints = await storage.getDataPoints(storageKey, fromTs, toTs, aggParam as 'raw' | '1min' | '5min');
-        
-        // For current, calculate from voltage (assuming 230V nominal, 0-100A range)
-        if (metric === 'current') {
-          samples[metric] = dataPoints.map(point => ({
-            ts: point.ts,
-            // More realistic current calculation: P = V * I, assuming 10kW load
-            value: Math.max(0, Math.min(100, (10000 / point.value) + (Math.random() - 0.5) * 2))
-          }));
-        } else {
-          samples[metric] = dataPoints;
-        }
+        samples[metric] = dataPoints;
       }
     }
 
@@ -86,10 +76,10 @@ export async function GET(request: NextRequest) {
       samples,
       latest: {
         voltage: latest.voltage || 0,
-        current: latest.voltage ? Math.max(0, Math.min(100, (10000 / latest.voltage) + (Math.random() - 0.5) * 2)) : 0, // Calculate current from voltage
+        current: latest.current_A || 0, // Use real current data
         'temp.CH1': latest['temp.CH1'] || 0,
+        'temp.CH2': latest['temp.CH2'] || 0,
         'temp.CH3': latest['temp.CH3'] || 0,
-        'temp.CH5': latest['temp.CH5'] || 0,
         vibration: latest.vibration || 0,
         frequency_Hz: latest.frequency_Hz || 0,
         energy_kWh: latest.energy_kWh || 0

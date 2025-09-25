@@ -3,12 +3,13 @@
 import React, { useMemo } from 'react';
 import BaseChart from './BaseChart';
 import { EChartsOption } from 'echarts';
+import { formatISTDateTime, formatISTTime } from '@/lib/timezone';
 
 interface TemperatureChartProps {
   data: {
     'temp.CH1': Array<{ ts: number; value: number }>;
+    'temp.CH2': Array<{ ts: number; value: number }>;
     'temp.CH3': Array<{ ts: number; value: number }>;
-    'temp.CH5': Array<{ ts: number; value: number }>;
   };
   chartType: 'line' | 'area' | 'bar';
 }
@@ -17,7 +18,7 @@ export default function TemperatureChart({ data, chartType }: TemperatureChartPr
   const option: EChartsOption = useMemo(() => ({
     backgroundColor: 'transparent',
     legend: {
-      data: ['CH1', 'CH3', 'CH5'],
+      data: ['CH1', 'CH2', 'CH3'],
       textStyle: {
         color: '#374151',
       },
@@ -39,7 +40,7 @@ export default function TemperatureChart({ data, chartType }: TemperatureChartPr
       },
       formatter: (params: unknown) => {
         const paramsArray = params as Array<{data: [number, number], color: string, seriesName: string}>;
-        const timestamp = new Date(paramsArray[0].data[0]).toLocaleString();
+        const timestamp = formatISTDateTime(paramsArray[0].data[0]);
         let content = `<div style="padding: 8px;"><div style="font-weight: bold; margin-bottom: 4px;">${timestamp}</div>`;
         
         paramsArray.forEach((param) => {
@@ -60,7 +61,7 @@ export default function TemperatureChart({ data, chartType }: TemperatureChartPr
       axisLabel: {
         color: '#374151',
         formatter: (value: number) => {
-          return new Date(value).toLocaleTimeString();
+          return formatISTTime(value);
         },
       },
       splitLine: {
@@ -127,9 +128,9 @@ export default function TemperatureChart({ data, chartType }: TemperatureChartPr
         symbolSize: 4,
       },
       {
-        name: 'CH3',
+        name: 'CH2',
         type: chartType === 'bar' ? 'bar' : chartType === 'area' ? 'line' : 'line',
-        data: data['temp.CH3'].map(point => [point.ts, point.value]),
+        data: data['temp.CH2'].map(point => [point.ts, point.value]),
         smooth: true,
         lineStyle: {
           color: '#f97316',
@@ -161,9 +162,9 @@ export default function TemperatureChart({ data, chartType }: TemperatureChartPr
         symbolSize: 4,
       },
       {
-        name: 'CH5',
+        name: 'CH3',
         type: chartType === 'bar' ? 'bar' : chartType === 'area' ? 'line' : 'line',
-        data: data['temp.CH5'].map(point => [point.ts, point.value]),
+        data: data['temp.CH3'].map(point => [point.ts, point.value]),
         smooth: true,
         lineStyle: {
           color: '#ec4899',

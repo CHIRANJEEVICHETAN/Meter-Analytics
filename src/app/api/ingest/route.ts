@@ -4,13 +4,14 @@ import { getStorage } from '@/lib/storage';
 interface IngestPayload {
   temperature: {
     CH1: number;
+    CH2: number;
     CH3: number;
-    CH5: number;
   };
   energy_meter: {
     energy_kWh: number;
     frequency_Hz: number;
     voltage_V: number;
+    current_A: number;
   };
   vibrator_meter: {
     s4_voltage: number;
@@ -52,11 +53,12 @@ export async function POST(request: NextRequest) {
     // Extract and store metrics
     const metrics = [
       { key: 'voltage', value: body.energy_meter?.voltage_V },
+      { key: 'current_A', value: body.energy_meter?.current_A },
       { key: 'frequency_Hz', value: body.energy_meter?.frequency_Hz },
       { key: 'energy_kWh', value: body.energy_meter?.energy_kWh },
       { key: 'temp.CH1', value: body.temperature?.CH1 },
+      { key: 'temp.CH2', value: body.temperature?.CH2 },
       { key: 'temp.CH3', value: body.temperature?.CH3 },
-      { key: 'temp.CH5', value: body.temperature?.CH5 },
       { key: 'vibration', value: body.vibrator_meter?.s4_voltage }
     ];
 
@@ -84,8 +86,8 @@ export async function GET() {
     message: 'IoT Analytics Ingest Endpoint',
     method: 'POST',
     expectedPayload: {
-      temperature: { CH1: 32.0, CH3: 31.0, CH5: 31.05 },
-      energy_meter: { energy_kWh: 17.39, frequency_Hz: 158.97, voltage_V: 50.0 },
+      temperature: { CH1: 32.0, CH2: 31.0, CH3: 31.05 },
+      energy_meter: { energy_kWh: 17.39, frequency_Hz: 158.97, voltage_V: 50.0, current_A: 25.5 },
       vibrator_meter: { s4_voltage: 2.9588 },
       timestamp: "2025-09-25 09:54:39"
     }

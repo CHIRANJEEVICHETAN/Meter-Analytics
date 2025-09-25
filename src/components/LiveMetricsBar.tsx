@@ -7,8 +7,8 @@ interface LiveMetricsBarProps {
     voltage: number;
     current: number;
     'temp.CH1': number;
+    'temp.CH2': number;
     'temp.CH3': number;
-    'temp.CH5': number;
     vibration: number;
     frequency_Hz: number;
     energy_kWh: number;
@@ -58,16 +58,16 @@ export default function LiveMetricsBar({ latest }: LiveMetricsBarProps) {
       bgColor: 'bg-red-500/20',
     },
     {
-      label: 'CH3 Temp',
-      value: latest['temp.CH3'].toFixed(1),
+      label: 'CH2 Temp',
+      value: latest['temp.CH2'].toFixed(1),
       unit: '°C',
       icon: Thermometer,
       color: 'text-orange-400',
       bgColor: 'bg-orange-500/20',
     },
     {
-      label: 'CH5 Temp',
-      value: latest['temp.CH5'].toFixed(1),
+      label: 'CH3 Temp',
+      value: latest['temp.CH3'].toFixed(1),
       unit: '°C',
       icon: Thermometer,
       color: 'text-pink-400',

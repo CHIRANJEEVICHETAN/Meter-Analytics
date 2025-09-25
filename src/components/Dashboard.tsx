@@ -6,9 +6,13 @@ import LiveMetricsBar from './LiveMetricsBar';
 import ChartCard from './ChartCard';
 import VoltageChart from './charts/VoltageChart';
 import CurrentChart from './charts/CurrentChart';
+import EnergyChart from './charts/EnergyChart';
+import FrequencyChart from './charts/FrequencyChart';
 import TemperatureChart from './charts/TemperatureChart';
 import VibrationChart from './charts/VibrationChart';
-import { fetchMetrics, MetricsData } from '@/lib/api';
+import LoginwareLogo from './LoginwareLogo';
+import { fetchMetrics, MetricsData, resetData } from '@/lib/api';
+import { getCurrentISTTime } from '@/lib/timezone';
 
 interface DashboardProps {
   initialData: MetricsData;
@@ -18,6 +22,8 @@ export default function Dashboard({ initialData }: DashboardProps) {
   const [chartTypes, setChartTypes] = useState({
     voltage: 'line' as 'line' | 'area' | 'bar',
     current: 'line' as 'line' | 'area' | 'bar',
+    energy: 'line' as 'line' | 'area' | 'bar',
+    frequency: 'line' as 'line' | 'area' | 'bar',
     temperature: 'line' as 'line' | 'area' | 'bar',
     vibration: 'line' as 'line' | 'area' | 'bar',
   });
@@ -28,7 +34,7 @@ export default function Dashboard({ initialData }: DashboardProps) {
     queryFn: () => fetchMetrics(
       undefined, // No from time
       undefined, // No to time
-      'voltage,current,temp.CH1,temp.CH3,temp.CH5,vibration,frequency_Hz,energy_kWh',
+      'voltage,current,temp.CH1,temp.CH2,temp.CH3,vibration,frequency_Hz,energy_kWh',
       'raw'
     ),
     refetchInterval: 5000, // Poll every 5 seconds
@@ -41,10 +47,12 @@ export default function Dashboard({ initialData }: DashboardProps) {
   const chartData = useMemo(() => ({
     voltage: metricsData?.samples.voltage || [],
     current: metricsData?.samples.current || [],
+    energy: metricsData?.samples.energy_kWh || [],
+    frequency: metricsData?.samples.frequency_Hz || [],
     temperature: {
       'temp.CH1': metricsData?.samples['temp.CH1'] || [],
+      'temp.CH2': metricsData?.samples['temp.CH2'] || [],
       'temp.CH3': metricsData?.samples['temp.CH3'] || [],
-      'temp.CH5': metricsData?.samples['temp.CH5'] || [],
     },
     vibration: metricsData?.samples.vibration || [],
     latest: metricsData?.latest || initialData.latest
@@ -56,6 +64,23 @@ export default function Dashboard({ initialData }: DashboardProps) {
       ...prev,
       [chartName]: type
     }));
+  };
+
+  const handleResetData = async () => {
+    if (confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
+      try {
+        const response = await resetData();
+        if (response.ok) {
+          // Refetch data to show empty state
+          window.location.reload();
+        } else {
+          alert('Failed to clear data. Please try again.');
+        }
+      } catch (error) {
+        console.error('Reset error:', error);
+        alert('Failed to clear data. Please try again.');
+      }
+    }
   };
 
 
@@ -96,24 +121,28 @@ export default function Dashboard({ initialData }: DashboardProps) {
         {/* Header */}
         <div className="bg-white border-b border-gray-200 px-8 py-6">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-semibold text-gray-900">Welcome back, User</h1>
-              <p className="text-gray-600" suppressHydrationWarning>
-                {new Date().toLocaleDateString('en-US', { 
-                  weekday: 'long', 
-                  year: 'numeric', 
-                  month: 'long', 
-                  day: 'numeric' 
-                })}
-              </p>
+            <div className="flex items-center gap-4">
+              <LoginwareLogo size="md" showText={true} />
+              <div className="ml-6 pl-6 border-l border-gray-200">
+                <h2 className="text-xl font-semibold text-gray-800 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  IoT Analytics Dashboard
+                </h2>
+                <p className="text-gray-500 text-sm mt-1">Real-time sensor monitoring & analytics</p>
+              </div>
             </div>
             <div className="flex items-center gap-4">
+              <button
+                onClick={handleResetData}
+                className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-colors duration-200"
+              >
+                Reset Data
+              </button>
               <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded-lg px-3 py-2">
                 <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                 <span className="text-green-700 text-sm font-medium">Live Data</span>
               </div>
               <div className="text-gray-500 text-sm">
-                Last updated: <span suppressHydrationWarning>{new Date().toLocaleTimeString()}</span>
+                Last updated: <span suppressHydrationWarning>{getCurrentISTTime()}</span>
               </div>
             </div>
           </div>
@@ -126,7 +155,7 @@ export default function Dashboard({ initialData }: DashboardProps) {
              <LiveMetricsBar latest={chartData.latest} />
            </div>
 
-          {/* Charts Grid */}
+          {/* First Row: Voltage and Current */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           {/* Voltage Chart */}
           <ChartCard
@@ -155,7 +184,36 @@ export default function Dashboard({ initialData }: DashboardProps) {
           </ChartCard>
         </div>
 
-          {/* Second Row Charts */}
+          {/* Second Row: Energy and Frequency */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          {/* Energy Chart */}
+          <ChartCard
+            title="Energy"
+            chartType={chartTypes.energy}
+            onChartTypeChange={(type) => handleChartTypeChange('energy', type)}
+             onExportCSV={() => exportCSV('energy', chartData.energy)}
+           >
+             <EnergyChart
+               data={chartData.energy}
+               chartType={chartTypes.energy}
+             />
+          </ChartCard>
+
+          {/* Frequency Chart */}
+          <ChartCard
+            title="Frequency"
+            chartType={chartTypes.frequency}
+            onChartTypeChange={(type) => handleChartTypeChange('frequency', type)}
+             onExportCSV={() => exportCSV('frequency', chartData.frequency)}
+           >
+             <FrequencyChart
+               data={chartData.frequency}
+               chartType={chartTypes.frequency}
+             />
+          </ChartCard>
+        </div>
+
+          {/* Third Row: Temperature and Vibration */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           {/* Temperature Chart */}
           <ChartCard
@@ -165,8 +223,8 @@ export default function Dashboard({ initialData }: DashboardProps) {
              onExportCSV={() => {
                const tempData = [
                  ...chartData.temperature['temp.CH1'].map(p => ({ ...p, series: 'CH1' })),
-                 ...chartData.temperature['temp.CH3'].map(p => ({ ...p, series: 'CH3' })),
-                 ...chartData.temperature['temp.CH5'].map(p => ({ ...p, series: 'CH5' }))
+                 ...chartData.temperature['temp.CH2'].map(p => ({ ...p, series: 'CH2' })),
+                 ...chartData.temperature['temp.CH3'].map(p => ({ ...p, series: 'CH3' }))
                ];
                exportCSV('temperature', tempData);
              }}
@@ -200,6 +258,14 @@ export default function Dashboard({ initialData }: DashboardProps) {
               </div>
             </div>
           )}
+        </div>
+      </div>
+      
+      {/* Footer */}
+      <div className="bg-white border-t border-gray-200 px-8 py-4">
+        <div className="flex items-center justify-center gap-2">
+          <p className="text-gray-500 text-sm">Powered by</p>
+          <LoginwareLogo size="sm" showText={true} />
         </div>
       </div>
     </div>

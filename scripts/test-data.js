@@ -1,25 +1,26 @@
 // Test script to populate sample data for the IoT Analytics Dashboard
 // Run with: node scripts/test-data.js
 
-const baseUrl = 'https://meter-analytics.vercel.app';
+const baseUrl = `http://localhost:3008`;
 
 // Generate sample data with realistic IoT sensor values
 function generateSampleData() {
   const now = new Date();
-  // Convert to IST timezone (UTC+5:30)
+  // Format timestamp in IST (YYYY-MM-DD HH:mm:ss format)
   const istTime = new Date(now.getTime() + (5.5 * 60 * 60 * 1000));
-  const timestamp = istTime.toISOString();
+  const timestamp = istTime.toISOString().slice(0, 19).replace('T', ' ');
   
   return {
     temperature: {
       CH1: 25 + Math.random() * 15, // 25-40°C
-      CH3: 24 + Math.random() * 16, // 24-40°C
-      CH5: 23 + Math.random() * 17, // 23-40°C
+      CH2: 24 + Math.random() * 16, // 24-40°C
+      CH3: 23 + Math.random() * 17, // 23-40°C
     },
     energy_meter: {
       energy_kWh: 15 + Math.random() * 10, // 15-25 kWh
       frequency_Hz: 50 + Math.random() * 2, // 50-52 Hz
       voltage_V: 220 + Math.random() * 20, // 220-240V
+      current_A: 10 + Math.random() * 20, // 10-30A
     },
     vibrator_meter: {
       s4_voltage: 2 + Math.random() * 2, // 2-4V

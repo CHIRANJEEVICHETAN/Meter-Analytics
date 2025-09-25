@@ -61,7 +61,7 @@ class InMemoryStorage {
     this.instanceId = Math.random().toString(36).substr(2, 9);
     
     // Initialize storage for all metrics
-    const metrics = ['voltage', 'frequency_Hz', 'energy_kWh', 'temp.CH1', 'temp.CH3', 'temp.CH5', 'vibration'];
+    const metrics = ['voltage', 'current_A', 'frequency_Hz', 'energy_kWh', 'temp.CH1', 'temp.CH2', 'temp.CH3', 'vibration'];
     metrics.forEach(metric => {
       this.rawData.set(metric, new CircularBuffer(this.MAX_RAW_POINTS));
       this.aggregatedData.set(metric, new CircularBuffer(1000)); // Keep 1000 aggregated points
