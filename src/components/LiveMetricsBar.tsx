@@ -31,7 +31,7 @@ export default function LiveMetricsBar({ latest }: LiveMetricsBarProps) {
     {
       label: 'Frequency',
       key: 'frequency_Hz',
-      value: latest.frequency_Hz.toFixed(2),
+      value: (latest.frequency_Hz ?? 0).toFixed(2),
       unit: 'Hz',
       icon: Activity,
       color: 'text-blue-400',
@@ -40,7 +40,7 @@ export default function LiveMetricsBar({ latest }: LiveMetricsBarProps) {
     {
       label: 'Voltage',
       key: 'voltage',
-      value: latest.voltage.toFixed(1),
+      value: (latest.voltage ?? 0).toFixed(1),
       unit: 'V',
       icon: Zap,
       color: 'text-yellow-400',
@@ -49,7 +49,7 @@ export default function LiveMetricsBar({ latest }: LiveMetricsBarProps) {
     {
       label: 'Current',
       key: 'current',
-      value: latest.current.toFixed(1),
+      value: (latest.current ?? 0).toFixed(1),
       unit: 'A',
       icon: Zap,
       color: 'text-indigo-400',
@@ -58,7 +58,7 @@ export default function LiveMetricsBar({ latest }: LiveMetricsBarProps) {
     {
       label: 'Energy',
       key: 'energy_kWh',
-      value: latest.energy_kWh.toFixed(2),
+      value: (latest.energy_kWh ?? 0).toFixed(2),
       unit: 'kWh',
       icon: Battery,
       color: 'text-green-400',
@@ -67,7 +67,7 @@ export default function LiveMetricsBar({ latest }: LiveMetricsBarProps) {
     {
       label: 'CH1 Temp',
       key: 'temp.CH1',
-      value: latest['temp.CH1'].toFixed(1),
+      value: (latest['temp.CH1'] ?? 0).toFixed(1),
       unit: '°C',
       icon: Thermometer,
       color: 'text-red-400',
@@ -76,7 +76,7 @@ export default function LiveMetricsBar({ latest }: LiveMetricsBarProps) {
     {
       label: 'CH2 Temp',
       key: 'temp.CH2',
-      value: latest['temp.CH2'].toFixed(1),
+      value: (latest['temp.CH2'] ?? 0).toFixed(1),
       unit: '°C',
       icon: Thermometer,
       color: 'text-orange-400',
@@ -85,7 +85,7 @@ export default function LiveMetricsBar({ latest }: LiveMetricsBarProps) {
     {
       label: 'CH3 Temp',
       key: 'temp.CH3',
-      value: latest['temp.CH3'].toFixed(1),
+      value: (latest['temp.CH3'] ?? 0).toFixed(1),
       unit: '°C',
       icon: Thermometer,
       color: 'text-pink-400',
@@ -94,7 +94,7 @@ export default function LiveMetricsBar({ latest }: LiveMetricsBarProps) {
     {
       label: 'Vibration',
       key: 'vibration',
-      value: latest.vibration.toFixed(3),
+      value: (latest.vibration ?? 0).toFixed(3),
       unit: 'V',
       icon: Gauge,
       color: 'text-purple-400',
@@ -128,7 +128,7 @@ export default function LiveMetricsBar({ latest }: LiveMetricsBarProps) {
             {/* Trend indicator */}
             <div className="mt-2 flex items-center text-xs">
               {(() => {
-                const percentage = percentages[metric.key] || 0;
+                const percentage = percentages[metric.key] ?? 0;
                 const isPositive = percentage >= 0;
                 const colorClass = isPositive ? 'text-green-600' : 'text-red-600';
                 const sign = isPositive ? '+' : '';
@@ -136,7 +136,7 @@ export default function LiveMetricsBar({ latest }: LiveMetricsBarProps) {
                 return (
                   <>
                     <span className={`font-medium ${colorClass}`}>
-                      {sign}{percentage.toFixed(1)}%
+                      {sign}{Number(percentage).toFixed(1)}%
                     </span>
                     <span className="ml-1 text-gray-500">vs last hour</span>
                   </>

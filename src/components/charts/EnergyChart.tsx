@@ -32,7 +32,7 @@ export default function EnergyChart({ data, chartType }: EnergyChartProps) {
         return `
           <div style="padding: 8px;">
             <div style="font-weight: bold; margin-bottom: 4px;">${timestamp}</div>
-            <div style="color: ${point.color};">● Energy: ${point.data[1].toFixed(2)} kWh</div>
+            <div style="color: ${point.color};">● Energy: ${(point.data[1] ?? 0).toFixed(2)} kWh</div>
           </div>
         `;
       },

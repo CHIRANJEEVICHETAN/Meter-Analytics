@@ -44,7 +44,7 @@ export default function TemperatureChart({ data, chartType }: TemperatureChartPr
         let content = `<div style="padding: 8px;"><div style="font-weight: bold; margin-bottom: 4px;">${timestamp}</div>`;
         
         paramsArray.forEach((param) => {
-          content += `<div style="color: ${param.color};">● ${param.seriesName}: ${param.data[1].toFixed(1)}°C</div>`;
+          content += `<div style="color: ${param.color};">● ${param.seriesName}: ${(param.data[1] ?? 0).toFixed(1)}°C</div>`;
         });
         
         content += '</div>';

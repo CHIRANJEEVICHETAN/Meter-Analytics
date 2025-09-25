@@ -32,7 +32,7 @@ export default function VoltageChart({ data, chartType }: VoltageChartProps) {
         return `
           <div style="padding: 8px;">
             <div style="font-weight: bold; margin-bottom: 4px;">${timestamp}</div>
-            <div style="color: ${point.color};">● Voltage: ${point.data[1].toFixed(2)} V</div>
+            <div style="color: ${point.color};">● Voltage: ${(point.data[1] ?? 0).toFixed(2)} V</div>
           </div>
         `;
       },

@@ -32,7 +32,7 @@ export default function CurrentChart({ data, chartType }: CurrentChartProps) {
         return `
           <div style="padding: 8px;">
             <div style="font-weight: bold; margin-bottom: 4px;">${timestamp}</div>
-            <div style="color: ${point.color};">● Current: ${point.data[1].toFixed(2)} A</div>
+            <div style="color: ${point.color};">● Current: ${(point.data[1] ?? 0).toFixed(2)} A</div>
           </div>
         `;
       },

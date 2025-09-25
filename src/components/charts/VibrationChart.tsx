@@ -32,7 +32,7 @@ export default function VibrationChart({ data, chartType }: VibrationChartProps)
         return `
           <div style="padding: 8px;">
             <div style="font-weight: bold; margin-bottom: 4px;">${timestamp}</div>
-            <div style="color: ${point.color};">● Vibration: ${point.data[1].toFixed(3)} V</div>
+            <div style="color: ${point.color};">● Vibration: ${(point.data[1] ?? 0).toFixed(3)} V</div>
           </div>
         `;
       },
