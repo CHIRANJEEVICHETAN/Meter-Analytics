@@ -70,22 +70,24 @@ export default function TimeFilter({
 
 
   return (
-    <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-      <div className="flex items-center gap-4 flex-wrap">
-        <div className="flex items-center gap-2">
-          <Clock className="w-5 h-5 text-gray-500" />
-          <span className="text-gray-700 font-medium">Time Range:</span>
+    <div className="bg-white/80 backdrop-blur-md border border-gray-200/50 rounded-xl p-6 shadow-lg shadow-gray-200/20">
+      <div className="flex items-center gap-6 flex-wrap">
+        <div className="flex items-center gap-3">
+          <div className="p-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg">
+            <Clock className="w-5 h-5 text-white" />
+          </div>
+          <span className="text-gray-700 font-semibold text-lg">Time Range:</span>
         </div>
         
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex gap-3 flex-wrap">
           {timeRanges.map((range) => (
             <button
               key={range.value}
               onClick={() => onRangeChange(range.value)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+              className={`px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-300 ${
                 selectedRange === range.value
-                  ? 'bg-gray-100 text-gray-900 border border-gray-300'
-                  : 'bg-white text-gray-600 hover:bg-gray-50 hover:text-gray-900 border border-gray-200'
+                  ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg shadow-blue-200 transform -translate-y-0.5'
+                  : 'bg-white/80 text-gray-600 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 hover:text-gray-900 border border-gray-200/50 hover:border-blue-200 hover:shadow-md'
               }`}
             >
               {range.label}
@@ -94,21 +96,23 @@ export default function TimeFilter({
         </div>
 
         {selectedRange === 'custom' && onCustomRangeChange && (
-          <div className="flex items-center gap-2 ml-4">
-            <Calendar className="w-4 h-4 text-gray-500" />
+          <div className="flex items-center gap-3 ml-4">
+            <div className="p-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg">
+              <Calendar className="w-4 h-4 text-white" />
+            </div>
             <input
               type="datetime-local"
               value={localFrom}
               onChange={(e) => handleCustomFromChange(e.target.value)}
-              className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-gray-700 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="bg-white/80 border border-gray-200/50 rounded-xl px-4 py-2.5 text-gray-700 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
               placeholder="From (IST)"
             />
-            <span className="text-gray-500">to</span>
+            <span className="text-gray-500 font-medium">to</span>
             <input
               type="datetime-local"
               value={localTo}
               onChange={(e) => handleCustomToChange(e.target.value)}
-              className="bg-white border border-gray-200 rounded-lg px-3 py-2 text-gray-700 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="bg-white/80 border border-gray-200/50 rounded-xl px-4 py-2.5 text-gray-700 text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
               placeholder="To (IST)"
             />
           </div>

@@ -133,34 +133,34 @@ export default function Dashboard({ initialData }: DashboardProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       {/* Main Content */}
       <div className="flex flex-col">
-        {/* Header */}
-        <div className="bg-white border-b border-gray-200 px-8 py-6">
+        {/* Enhanced Header */}
+        <div className="bg-white/80 backdrop-blur-md border-b border-gray-200/50 shadow-lg shadow-gray-200/20 px-8 py-6">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <LoginwareLogo size="md" showText={true} />
-              <div className="ml-6 pl-6 border-l border-gray-200">
-                <h2 className="text-xl font-semibold text-gray-800 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <div className="flex items-center gap-6">
+              <LoginwareLogo size="md" />
+              <div className="ml-6 pl-6 border-l border-gradient-to-b from-blue-200 to-purple-200">
+                <h2 className="text-2xl font-bold text-gray-800 bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
                   IoT Analytics Dashboard
                 </h2>
-                <p className="text-gray-500 text-sm mt-1">Real-time sensor monitoring & analytics</p>
+                <p className="text-gray-600 text-sm mt-1 font-medium">Real-time sensor monitoring & analytics</p>
               </div>
             </div>
             <div className="flex items-center gap-4">
               <button
                 onClick={handleResetData}
-                className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium rounded-lg transition-colors duration-200"
+                className="px-6 py-2.5 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white text-sm font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-red-200 hover:shadow-red-300 transform hover:-translate-y-0.5"
               >
                 Reset Data
               </button>
-              <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded-lg px-3 py-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-green-700 text-sm font-medium">Live Data</span>
+              <div className="flex items-center gap-3 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200/50 rounded-xl px-4 py-2.5 shadow-sm">
+                <div className="w-2.5 h-2.5 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full animate-pulse shadow-sm"></div>
+                <span className="text-green-700 text-sm font-semibold">Live Data</span>
               </div>
-              <div className="text-gray-500 text-sm">
-                Last updated: <span suppressHydrationWarning>{getCurrentISTTime()}</span>
+              <div className="text-gray-600 text-sm font-medium bg-gray-50/80 px-3 py-2 rounded-lg border border-gray-200/50">
+                Last updated: <span suppressHydrationWarning className="text-blue-600 font-semibold">{getCurrentISTTime()}</span>
               </div>
             </div>
           </div>
@@ -293,11 +293,27 @@ export default function Dashboard({ initialData }: DashboardProps) {
         </div>
       </div>
       
-      {/* Footer */}
-      <div className="bg-white border-t border-gray-200 px-8 py-4">
-        <div className="flex items-center justify-center gap-2">
-          <p className="text-gray-500 text-sm">Powered by</p>
-          <LoginwareLogo size="sm" showText={true} />
+      {/* Enhanced Footer */}
+      <div className="bg-white/80 backdrop-blur-md border-t border-gray-200/50 shadow-lg shadow-gray-200/20 px-8 py-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <p className="text-gray-600 text-sm font-medium">Powered by</p>
+            <LoginwareLogo size="sm" />
+          </div>
+          <div className="flex items-center gap-6 text-sm text-gray-500">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+              <span>Real-time Monitoring</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <span>IST Timezone</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+              <span>IoT Analytics</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

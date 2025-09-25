@@ -1,35 +1,28 @@
 'use client';
 
+import Image from 'next/image';
+
 interface LoginwareLogoProps {
   size?: 'sm' | 'md' | 'lg';
-  showText?: boolean;
 }
 
-export default function LoginwareLogo({ size = 'md', showText = true }: LoginwareLogoProps) {
+export default function LoginwareLogo({ size = 'md' }: LoginwareLogoProps) {
   const sizeClasses = {
-    sm: 'w-6 h-6 text-sm',
-    md: 'w-10 h-10 text-lg',
-    lg: 'w-16 h-16 text-2xl'
-  };
-
-  const textSizeClasses = {
-    sm: 'text-lg',
-    md: 'text-2xl',
-    lg: 'text-3xl'
+    sm: 'w-32 h-10',
+    md: 'w-48 h-12',
+    lg: 'w-64 h-16'
   };
 
   return (
-    <div className="flex items-center gap-3">
-      <div className={`${sizeClasses[size]} bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center`}>
-        <span className="text-white font-bold">L</span>
-      </div>
-      {showText && (
-        <div>
-          <h1 className={`${textSizeClasses[size]} font-semibold text-gray-900`}>
-            Loginware.ai
-          </h1>
-        </div>
-      )}
+    <div className="flex items-center">
+      <Image
+        src="/loginware.jpg"
+        alt="Loginware.ai"
+        width={size === 'sm' ? 128 : size === 'md' ? 192 : 256}
+        height={size === 'sm' ? 40 : size === 'md' ? 48 : 64}
+        className={`${sizeClasses[size]} object-contain`}
+        priority
+      />
     </div>
   );
 }
