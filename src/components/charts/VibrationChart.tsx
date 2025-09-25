@@ -62,7 +62,7 @@ export default function VibrationChart({ data, chartType }: VibrationChartProps)
         color: '#374151',
       },
       min: 0,
-      max: 100,
+      max: 10,
       axisLine: {
         lineStyle: {
           color: '#e5e7eb',

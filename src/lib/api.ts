@@ -40,7 +40,7 @@ export async function fetchMetrics(
   if (metrics) params.append('metrics', metrics);
   params.append('agg', agg);
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3008';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
   const response = await fetch(`${baseUrl}/api/metrics?${params.toString()}`);
   
   if (!response.ok) {
@@ -51,7 +51,7 @@ export async function fetchMetrics(
 }
 
 export async function ingestData(payload: unknown): Promise<Response> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3008';
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || '';
   return fetch(`${baseUrl}/api/ingest`, {
     method: 'POST',
     headers: {
