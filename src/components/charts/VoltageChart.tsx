@@ -1,28 +1,16 @@
 'use client';
 
+import React, { useMemo } from 'react';
 import BaseChart from './BaseChart';
 import { EChartsOption } from 'echarts';
 
 interface VoltageChartProps {
   data: Array<{ ts: number; value: number }>;
   chartType: 'line' | 'area' | 'bar';
-  timeRange: { from: string; to: string };
 }
 
-export default function VoltageChart({ data, chartType, timeRange }: VoltageChartProps) {
-  // Handle empty data
-  if (!data || data.length === 0) {
-    return (
-      <div className="h-full flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-gray-500 text-lg mb-2">No voltage data available</div>
-          <div className="text-gray-400 text-sm">Data will appear here once sensors start sending readings</div>
-        </div>
-      </div>
-    );
-  }
-
-  const option: EChartsOption = {
+export default function VoltageChart({ data, chartType }: VoltageChartProps) {
+  const option: EChartsOption = useMemo(() => ({
     backgroundColor: 'transparent',
     grid: {
       left: '3%',
@@ -133,9 +121,21 @@ export default function VoltageChart({ data, chartType, timeRange }: VoltageChar
       },
     ],
     animation: true,
-    animationDuration: 1000,
+    animationDuration: 300, // Reduced animation duration for smoother updates
     animationEasing: 'cubicOut',
-  };
+  }), [data, chartType]);
+
+  // Handle empty data
+  if (!data || data.length === 0) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-gray-500 text-lg mb-2">No voltage data available</div>
+          <div className="text-gray-400 text-sm">Data will appear here once sensors start sending readings</div>
+        </div>
+      </div>
+    );
+  }
 
   return <BaseChart option={option} />;
 }

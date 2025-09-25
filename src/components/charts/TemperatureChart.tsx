@@ -1,5 +1,6 @@
 'use client';
 
+import React, { useMemo } from 'react';
 import BaseChart from './BaseChart';
 import { EChartsOption } from 'echarts';
 
@@ -10,24 +11,10 @@ interface TemperatureChartProps {
     'temp.CH5': Array<{ ts: number; value: number }>;
   };
   chartType: 'line' | 'area' | 'bar';
-  timeRange: { from: string; to: string };
 }
 
-export default function TemperatureChart({ data, chartType, timeRange }: TemperatureChartProps) {
-  // Handle empty data
-  const hasData = Object.values(data).some(channel => channel && channel.length > 0);
-  if (!hasData) {
-    return (
-      <div className="h-full flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-gray-500 text-lg mb-2">No temperature data available</div>
-          <div className="text-gray-400 text-sm">Data will appear here once sensors start sending readings</div>
-        </div>
-      </div>
-    );
-  }
-
-  const option: EChartsOption = {
+export default function TemperatureChart({ data, chartType }: TemperatureChartProps) {
+  const option: EChartsOption = useMemo(() => ({
     backgroundColor: 'transparent',
     legend: {
       data: ['CH1', 'CH3', 'CH5'],
@@ -209,9 +196,22 @@ export default function TemperatureChart({ data, chartType, timeRange }: Tempera
       },
     ],
     animation: true,
-    animationDuration: 1000,
+    animationDuration: 300, // Reduced animation duration for smoother updates
     animationEasing: 'cubicOut',
-  };
+  }), [data, chartType]);
+
+  // Handle empty data
+  const hasData = Object.values(data).some(channel => channel && channel.length > 0);
+  if (!hasData) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-gray-500 text-lg mb-2">No temperature data available</div>
+          <div className="text-gray-400 text-sm">Data will appear here once sensors start sending readings</div>
+        </div>
+      </div>
+    );
+  }
 
   return <BaseChart option={option} />;
 }

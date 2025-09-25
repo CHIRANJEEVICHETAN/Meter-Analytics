@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
       if (isNaN(timestamp)) {
         return NextResponse.json({ error: 'Invalid timestamp format' }, { status: 400 });
       }
-    } catch (error) {
+    } catch {
       return NextResponse.json({ error: 'Invalid timestamp format' }, { status: 400 });
     }
 

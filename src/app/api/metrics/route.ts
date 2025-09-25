@@ -18,7 +18,6 @@ export async function GET(request: NextRequest) {
     }
 
     // Parse time range
-    const now = Date.now();
     let fromTs: number | undefined;
     let toTs: number | undefined;
 

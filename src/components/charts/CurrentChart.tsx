@@ -1,28 +1,16 @@
 'use client';
 
+import React, { useMemo } from 'react';
 import BaseChart from './BaseChart';
 import { EChartsOption } from 'echarts';
 
 interface CurrentChartProps {
   data: Array<{ ts: number; value: number }>;
   chartType: 'line' | 'area' | 'bar';
-  timeRange: { from: string; to: string };
 }
 
-export default function CurrentChart({ data, chartType, timeRange }: CurrentChartProps) {
-  // Handle empty data
-  if (!data || data.length === 0) {
-    return (
-      <div className="h-full flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-gray-500 text-lg mb-2">No current data available</div>
-          <div className="text-gray-400 text-sm">Data will appear here once sensors start sending readings</div>
-        </div>
-      </div>
-    );
-  }
-
-  const option: EChartsOption = {
+export default function CurrentChart({ data, chartType }: CurrentChartProps) {
+  const option: EChartsOption = useMemo(() => ({
     backgroundColor: 'transparent',
     grid: {
       left: '3%',
@@ -133,9 +121,21 @@ export default function CurrentChart({ data, chartType, timeRange }: CurrentChar
       },
     ],
     animation: true,
-    animationDuration: 1000,
+    animationDuration: 300, // Reduced animation duration for smoother updates
     animationEasing: 'cubicOut',
-  };
+  }), [data, chartType]);
+
+  // Handle empty data
+  if (!data || data.length === 0) {
+    return (
+      <div className="h-full flex items-center justify-center">
+        <div className="text-center">
+          <div className="text-gray-500 text-lg mb-2">No current data available</div>
+          <div className="text-gray-400 text-sm">Data will appear here once sensors start sending readings</div>
+        </div>
+      </div>
+    );
+  }
 
   return <BaseChart option={option} />;
 }

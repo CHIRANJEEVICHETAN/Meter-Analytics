@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import LiveMetricsBar from './LiveMetricsBar';
 import ChartCard from './ChartCard';
@@ -36,6 +36,19 @@ export default function Dashboard({ initialData }: DashboardProps) {
     staleTime: 4000, // Consider data fresh for 4 seconds to reduce unnecessary refetches
     refetchOnWindowFocus: false, // Prevent refetch on window focus
   });
+
+  // Memoize chart data to prevent unnecessary re-renders
+  const chartData = useMemo(() => ({
+    voltage: metricsData?.samples.voltage || [],
+    current: metricsData?.samples.current || [],
+    temperature: {
+      'temp.CH1': metricsData?.samples['temp.CH1'] || [],
+      'temp.CH3': metricsData?.samples['temp.CH3'] || [],
+      'temp.CH5': metricsData?.samples['temp.CH5'] || [],
+    },
+    vibration: metricsData?.samples.vibration || [],
+    latest: metricsData?.latest || initialData.latest
+  }), [metricsData, initialData.latest]);
 
 
   const handleChartTypeChange = (chartName: keyof typeof chartTypes, type: 'line' | 'area' | 'bar') => {
@@ -108,10 +121,10 @@ export default function Dashboard({ initialData }: DashboardProps) {
 
         {/* Content Area */}
         <div className="flex-1 p-8">
-          {/* Live Metrics */}
-          <div className="mb-8">
-            <LiveMetricsBar latest={metricsData?.latest || initialData.latest} />
-          </div>
+           {/* Live Metrics */}
+           <div className="mb-8">
+             <LiveMetricsBar latest={chartData.latest} />
+           </div>
 
           {/* Charts Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
@@ -120,13 +133,12 @@ export default function Dashboard({ initialData }: DashboardProps) {
             title="Voltage"
             chartType={chartTypes.voltage}
             onChartTypeChange={(type) => handleChartTypeChange('voltage', type)}
-            onExportCSV={() => exportCSV('voltage', metricsData?.samples.voltage || [])}
-          >
-            <VoltageChart
-              data={metricsData?.samples.voltage || []}
-              chartType={chartTypes.voltage}
-              timeRange={{ from: '', to: '' }}
-            />
+             onExportCSV={() => exportCSV('voltage', chartData.voltage)}
+           >
+             <VoltageChart
+               data={chartData.voltage}
+               chartType={chartTypes.voltage}
+             />
           </ChartCard>
 
           {/* Current Chart */}
@@ -134,13 +146,12 @@ export default function Dashboard({ initialData }: DashboardProps) {
             title="Current"
             chartType={chartTypes.current}
             onChartTypeChange={(type) => handleChartTypeChange('current', type)}
-            onExportCSV={() => exportCSV('current', metricsData?.samples.current || [])}
-          >
-            <CurrentChart
-              data={metricsData?.samples.current || []}
-              chartType={chartTypes.current}
-              timeRange={{ from: '', to: '' }}
-            />
+             onExportCSV={() => exportCSV('current', chartData.current)}
+           >
+             <CurrentChart
+               data={chartData.current}
+               chartType={chartTypes.current}
+             />
           </ChartCard>
         </div>
 
@@ -151,24 +162,19 @@ export default function Dashboard({ initialData }: DashboardProps) {
             title="Temperature"
             chartType={chartTypes.temperature}
             onChartTypeChange={(type) => handleChartTypeChange('temperature', type)}
-            onExportCSV={() => {
-              const tempData = [
-                ...(metricsData?.samples['temp.CH1'] || []).map(p => ({ ...p, series: 'CH1' })),
-                ...(metricsData?.samples['temp.CH3'] || []).map(p => ({ ...p, series: 'CH3' })),
-                ...(metricsData?.samples['temp.CH5'] || []).map(p => ({ ...p, series: 'CH5' }))
-              ];
-              exportCSV('temperature', tempData);
-            }}
-          >
-            <TemperatureChart
-              data={{
-                'temp.CH1': metricsData?.samples['temp.CH1'] || [],
-                'temp.CH3': metricsData?.samples['temp.CH3'] || [],
-                'temp.CH5': metricsData?.samples['temp.CH5'] || [],
-              }}
-              chartType={chartTypes.temperature}
-              timeRange={{ from: '', to: '' }}
-            />
+             onExportCSV={() => {
+               const tempData = [
+                 ...chartData.temperature['temp.CH1'].map(p => ({ ...p, series: 'CH1' })),
+                 ...chartData.temperature['temp.CH3'].map(p => ({ ...p, series: 'CH3' })),
+                 ...chartData.temperature['temp.CH5'].map(p => ({ ...p, series: 'CH5' }))
+               ];
+               exportCSV('temperature', tempData);
+             }}
+           >
+             <TemperatureChart
+               data={chartData.temperature}
+               chartType={chartTypes.temperature}
+             />
           </ChartCard>
 
           {/* Vibration Chart */}
@@ -176,13 +182,12 @@ export default function Dashboard({ initialData }: DashboardProps) {
             title="Vibration"
             chartType={chartTypes.vibration}
             onChartTypeChange={(type) => handleChartTypeChange('vibration', type)}
-            onExportCSV={() => exportCSV('vibration', metricsData?.samples.vibration || [])}
-          >
-            <VibrationChart
-              data={metricsData?.samples.vibration || []}
-              chartType={chartTypes.vibration}
-              timeRange={{ from: '', to: '' }}
-            />
+             onExportCSV={() => exportCSV('vibration', chartData.vibration)}
+           >
+             <VibrationChart
+               data={chartData.vibration}
+               chartType={chartTypes.vibration}
+             />
           </ChartCard>
         </div>
 

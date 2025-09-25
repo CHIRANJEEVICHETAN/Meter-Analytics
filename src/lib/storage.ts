@@ -200,7 +200,7 @@ export async function getVercelKV() {
   try {
     const { kv } = await import('@vercel/kv');
     return kv;
-  } catch (error) {
+  } catch {
     console.warn('Vercel KV not available, using in-memory storage');
     return null;
   }
